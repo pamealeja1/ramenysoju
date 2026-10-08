@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Subir Manga | Anime</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <link rel="stylesheet" href="css/manga.css" type="text/css">
+</head>
+
+<body>
+    <div id="preloder"><div class="loader"></div></div>
+
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="header__logo">
+                        <a href="./index.html"><img src="img/logo.png" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="header__nav">
+                        <nav class="header__menu mobile-menu">
+                            <ul>
+                                <li><a href="./index.html">Homepage</a></li>
+                                <li><a href="./categories.html">Categories <span class="arrow_carrot-down"></span></a>
+                                    <ul class="dropdown">
+                                        <li><a href="./categories.html">Categories</a></li>
+                                        <li><a href="./anime-details.html">Anime Details</a></li>
+                                        <li><a href="./anime-watching.html">Anime Watching</a></li>
+                                        <li><a href="./blog-details.html">Blog Details</a></li>
+                                        <li><a href="./signup.html">Sign Up</a></li>
+                                        <li><a href="./login.html">Login</a></li>
+                                    </ul>
+                                </li>
+                                <li class="active"><a href="./manga.html">Manga</a></li>
+                                <li><a href="./blog.html">Our Blog</a></li>
+                                <li><a href="#">Contacts</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="header__right">
+                        <a href="./manga.html" class="primary-btn"><i class="fa fa-book"></i> Biblioteca</a>
+                    </div>
+                </div>
+            </div>
+            <div id="mobile-menu-wrap"></div>
+        </div>
+    </header>
+    <!-- Header End -->
+
+    <!-- Upload Form Begin -->
+    <section class="product spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <h4>Subir Nuevo Manga</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="manga-form">
+                <!-- Step 1: Manga info -->
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="m-title" placeholder="Ej: One Piece, Naruto...">
+                </div>
+                <div class="form-group">
+                    <label>Género</label>
+                    <input type="text" id="m-genre" placeholder="Ej: Acción, Aventura, Romance...">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="m-desc" rows="3" placeholder="Breve descripción del manga..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Portada</label>
+                    <input type="file" id="m-cover" accept="image/*" style="display:none;">
+                    <div class="cover-preview" id="cover-preview">Click para elegir portada</div>
+                </div>
+
+                <hr style="border-color:#1e1f40; margin:30px 0;">
+
+                <!-- Step 2: Chapter pages -->
+                <div class="form-group">
+                    <label>Número de Capítulo</label>
+                    <input type="text" id="ch-num" placeholder="Ej: 1" value="1">
+                </div>
+                <div class="form-group">
+                    <label>Páginas del Capítulo</label>
+                    <div class="upload-zone" id="upload-zone">
+                        <i class="fa fa-cloud-upload"></i>
+                        <p>Arrastra las imágenes aquí o click para seleccionar</p>
+                        <p style="font-size:12px;margin-top:8px;">Se guardan en orden. Sube todas las páginas del capítulo.</p>
+                    </div>
+                    <input type="file" id="page-files" accept="image/*" multiple style="display:none;">
+                    <div class="page-thumbs" id="page-thumbs"></div>
+                </div>
+
+                <div style="margin-top:30px;">
+                    <button class="site-btn" id="save-btn">Guardar Manga</button>
+                    <a href="./manga.html" class="primary-btn" style="margin-left:16px;">Cancelar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Upload Form End -->
+
+    <!-- Footer Section Begin -->
+    <footer class="footer">
+        <div class="page-up">
+            <a href="#" id="scrollToTopButton"><span class="arrow_carrot-up"></span></a>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="footer__logo">
+                        <a href="./index.html"><img src="img/logo.png" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="footer__nav">
+                        <ul>
+                            <li><a href="./index.html">Homepage</a></li>
+                            <li><a href="./categories.html">Categories</a></li>
+                            <li class="active"><a href="./manga.html">Manga</a></li>
+                            <li><a href="./blog.html">Our Blog</a></li>
+                            <li><a href="#">Contacts</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <p>Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer Section End -->
+
+    <!-- Js Plugins -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.slicknav.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/manga-db.js"></script>
+    <script>
+    'use strict';
+    (function () {
+        let coverBlob = null;
+        let pageFiles = [];
+
+        // Cover selection
+        const coverInput = document.getElementById('m-cover');
+        const coverPreview = document.getElementById('cover-preview');
+        coverPreview.addEventListener('click', () => coverInput.click());
+        coverInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            coverBlob = file;
+            const url = URL.createObjectURL(file);
+            coverPreview.style.backgroundImage = 'url(' + url + ')';
+            coverPreview.textContent = '';
+        });
+
+        // Page upload zone
+        const zone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('page-files');
+        const thumbs = document.getElementById('page-thumbs');
+
+        zone.addEventListener('click', () => fileInput.click());
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', function () { handleFiles(this.files); });
+
+        function handleFiles(files) {
+            for (const f of files) {
+                if (!f.type.startsWith('image/')) continue;
+                pageFiles.push(f);
+            }
+            renderThumbs();
+        }
+
+        function renderThumbs() {
+            thumbs.innerHTML = '';
+            pageFiles.forEach((f, i) => {
+                const url = URL.createObjectURL(f);
+                const thumb = document.createElement('div');
+                thumb.className = 'page-thumb';
+                thumb.style.backgroundImage = 'url(' + url + ')';
+                thumb.innerHTML = `<span class="num">${i + 1}</span><button class="rm" data-idx="${i}"><i class="fa fa-times"></i></button>`;
+                thumbs.appendChild(thumb);
+            });
+        }
+
+        thumbs.addEventListener('click', function (e) {
+            const btn = e.target.closest('.rm');
+            if (!btn) return;
+            const idx = parseInt(btn.dataset.idx);
+            pageFiles.splice(idx, 1);
+            renderThumbs();
+        });
+
+        // Save
+        document.getElementById('save-btn').addEventListener('click', async function () {
+            const title = document.getElementById('m-title').value.trim();
+            const genre = document.getElementById('m-genre').value.trim();
+            const desc = document.getElementById('m-desc').value.trim();
+            const chNum = document.getElementById('ch-num').value.trim() || '1';
+
+            if (!title) { alert('Ingresa un título'); return; }
+            if (!pageFiles.length) { alert('Sube al menos una página'); return; }
+
+            this.textContent = 'Guardando...';
+            this.disabled = true;
+
+            const mangaId = MangaDB.genId();
+            const coverUrl = coverBlob ? URL.createObjectURL(coverBlob) : '';
+
+            await MangaDB.addManga({
+                id: mangaId,
+                title, genre, description: desc,
+                coverUrl,
+                coverBlob: coverBlob || null,
+                createdAt: Date.now()
+            });
+
+            const chapterId = MangaDB.genId();
+            await MangaDB.addChapter({
+                id: chapterId,
+                mangaId,
+                number: chNum,
+                title: 'Capítulo ' + chNum,
+                order: 1,
+                createdAt: Date.now()
+            });
+
+            for (let i = 0; i < pageFiles.length; i++) {
+                await MangaDB.addPage({
+                    id: MangaDB.genId(),
+                    chapterId,
+                    order: i,
+                    blob: pageFiles[i]
+                });
+            }
+
+            window.location.href = './manga-reader.html?id=' + mangaId;
+        });
+    })();
+    </script>
+</body>
+</html>

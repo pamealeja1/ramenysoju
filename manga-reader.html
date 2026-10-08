@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Lector de Manga | Anime</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <link rel="stylesheet" href="css/manga.css" type="text/css">
+</head>
+
+<body>
+    <!-- Reader Bar -->
+    <div class="reader-bar" id="reader-bar">
+        <a href="./manga.html" class="back"><i class="fa fa-arrow-left"></i>Biblioteca</a>
+        <div class="title" id="reader-title">Manga</div>
+        <div class="controls">
+            <select id="chapter-select"></select>
+            <button class="mode-btn" id="mode-btn">Scroll</button>
+        </div>
+    </div>
+
+    <!-- Reader Container -->
+    <div class="reader-container" id="reader-container">
+        <div class="reader-loading" id="reader-loading">
+            <i class="fa fa-spinner fa-pulse"></i>
+            <p>Cargando...</p>
+        </div>
+    </div>
+
+    <!-- Js Plugins -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/manga-db.js"></script>
+    <script>
+    'use strict';
+    (async function () {
+        const params = new URLSearchParams(location.search);
+        const mangaId = params.get('id');
+        const startChapterId = params.get('ch');
+        const container = document.getElementById('reader-container');
+        const loading = document.getElementById('reader-loading');
+        const bar = document.getElementById('reader-bar');
+        const titleEl = document.getElementById('reader-title');
+        const chSelect = document.getElementById('chapter-select');
+        const modeBtn = document.getElementById('mode-btn');
+
+        if (!mangaId) { window.location.href = './manga.html'; return; }
+
+        const manga = await MangaDB.getManga(mangaId);
+        if (!manga) { window.location.href = './manga.html'; return; }
+
+        const chapters = await MangaDB.getChaptersByManga(mangaId);
+        titleEl.textContent = manga.title;
+
+        // Populate chapter select
+        chapters.forEach(ch => {
+            const opt = document.createElement('option');
+            opt.value = ch.id;
+            opt.textContent = ch.title;
+            chSelect.appendChild(opt);
+        });
+
+        let currentChId = startChapterId || (chapters[0] && chapters[0].id);
+        let mode = 'scroll'; // 'scroll' or 'single'
+        let currentPage = 0;
+        let pages = [];
+
+        function loadChapter(chId) {
+            currentChId = chId;
+            chSelect.value = chId;
+            render();
+        }
+
+        async function render() {
+            container.innerHTML = '<div class="reader-loading"><i class="fa fa-spinner fa-pulse"></i><p>Cargando...</p></div>';
+            pages = await MangaDB.getPagesByChapter(currentChId);
+
+            if (!pages.length) {
+                container.innerHTML = '<div class="manga-empty"><i class="fa fa-exclamation-circle"></i><p>Este capítulo no tiene páginas.</p></div>';
+                return;
+            }
+
+            currentPage = 0;
+
+            if (mode === 'scroll') {
+                renderScroll();
+            } else {
+                renderSingle();
+            }
+        }
+
+        function renderScroll() {
+            container.className = 'reader-container';
+            const scrollDiv = document.createElement('div');
+            scrollDiv.className = 'reader-scroll';
+            pages.forEach(pg => {
+                const img = document.createElement('img');
+                img.className = 'page-img';
+                img.src = URL.createObjectURL(pg.blob);
+                img.loading = 'lazy';
+                scrollDiv.appendChild(img);
+            });
+            container.innerHTML = '';
+            container.appendChild(scrollDiv);
+            window.scrollTo(0, 0);
+        }
+
+        function renderSingle() {
+            container.className = 'reader-container';
+            const wrap = document.createElement('div');
+            wrap.className = 'reader-single';
+
+            const pg = pages[currentPage];
+            const img = document.createElement('img');
+            img.className = 'page-img';
+            img.src = URL.createObjectURL(pg.blob);
+            wrap.appendChild(img);
+
+            const nav = document.createElement('div');
+            nav.className = 'reader-nav';
+            nav.innerHTML = `
+                <button id="prev-btn" ${currentPage === 0 ? 'disabled' : ''}>Anterior</button>
+                <span class="counter">Página ${currentPage + 1} / ${pages.length}</span>
+                <button id="next-btn" ${currentPage === pages.length - 1 ? 'disabled' : ''}>Siguiente</button>
+            `;
+            wrap.appendChild(nav);
+            container.innerHTML = '';
+            container.appendChild(wrap);
+
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                if (currentPage > 0) { currentPage--; renderSingle(); }
+            });
+            document.getElementById('next-btn').addEventListener('click', () => {
+                if (currentPage < pages.length - 1) { currentPage++; renderSingle(); }
+                else goNextChapter();
+            });
+            window.scrollTo(0, 0);
+        }
+
+        async function goNextChapter() {
+            const idx = chapters.findIndex(c => c.id === currentChId);
+            if (idx < chapters.length - 1) {
+                loadChapter(chapters[idx + 1].id);
+            } else {
+                container.innerHTML = '<div class="manga-empty"><i class="fa fa-check-circle"></i><p>¡Has terminado todos los capítulos!</p><a href="./manga.html" class="site-btn" style="margin-top:20px;">Volver a la Biblioteca</a></div>';
+            }
+        }
+
+        chSelect.addEventListener('change', () => loadChapter(chSelect.value));
+
+        modeBtn.addEventListener('click', () => {
+            mode = mode === 'scroll' ? 'single' : 'scroll';
+            modeBtn.textContent = mode === 'scroll' ? 'Scroll' : 'Página';
+            render();
+        });
+
+        // Tap center to toggle bar on mobile
+        let lastTap = 0;
+        document.addEventListener('click', e => {
+            if (e.target.closest('button') || e.target.closest('select') || e.target.closest('a')) return;
+            const now = Date.now();
+            if (now - lastTap < 350) {
+                bar.classList.toggle('hidden');
+            }
+            lastTap = now;
+        });
+
+        // Start
+        if (currentChId) {
+            loadChapter(currentChId);
+        } else {
+            container.innerHTML = '<div class="manga-detail"><h2>' + manga.title + '</h2><p>Este manga aún no tiene capítulos.</p><a href="./manga-upload.html" class="site-btn">Subir Capítulo</a></div>';
+        }
+    })();
+    </script>
+</body>
+</html>
