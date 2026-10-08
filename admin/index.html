@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <style>
+        body { margin: 0; background: #0f172a; color: #e2e8f0; font-family: Arial; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        input, textarea { width: 100%; padding: 10px; margin: 10px 0; background: #1e293b; color: #e2e8f0; border: 1px solid #475569; border-radius: 8px; font-family: monospace; }
+        button { padding: 10px 20px; background: #f59e0b; color: #111; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        h1 { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login">
+            <h1>🔒 Panel Admin</h1>
+            <input type="password" id="pass" placeholder="Contraseña">
+            <button onclick="login()">Entrar</button>
+        </div>
+        <div id="admin" style="display:none">
+            <h1>Panel de Administración</h1>
+            <textarea id="json" style="height:500px;"></textarea>
+            <br>
+            <button onclick="download()">Descargar JSON</button>
+            <button onclick="logout()">Salir</button>
+        </div>
+    </div>
+    <script>
+        function login() {
+            if(document.getElementById('pass').value === 'admin123') {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('admin').style.display = 'block';
+                fetch('../data/mangas.json').then(r=>r.json()).then(d=>document.getElementById('json').value=JSON.stringify(d,null,2));
+            } else alert('Contraseña incorrecta');
+        }
+        function download() {
+            try {
+                JSON.parse(document.getElementById('json').value);
+                const blob = new Blob([document.getElementById('json').value]);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mangas.json';
+                a.click();
+                alert('Descargado. Sube esto a GitHub en data/mangas.json');
+            } catch { alert('JSON inválido'); }
+        }
+        function logout() {
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('admin').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
