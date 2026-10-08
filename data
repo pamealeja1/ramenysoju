@@ -1,1 +1,1 @@
-mangas.json
+{"mangas":[{"slug":"sakura","title":"Sakura no Hana","author":"Aoi Sato","genre":"Romance","status":"En curso","summary":"Una historia de amor en la costa.","cover":"https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400","chapters":[{"number":1,"title":"Inicio","pages":["https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600","https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600"]}]}]}
