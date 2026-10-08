@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Subir Manga | Anime</title>
+    <title>Editar Manga | Anime</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -21,7 +21,6 @@
 <body>
     <div id="preloder"><div class="loader"></div></div>
 
-    <!-- Header Section Begin -->
     <header class="header">
         <div class="container">
             <div class="row">
@@ -61,66 +60,71 @@
             <div id="mobile-menu-wrap"></div>
         </div>
     </header>
-    <!-- Header End -->
 
-    <!-- Upload Form Begin -->
     <section class="product spad">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section-title">
-                        <h4>Subir Nuevo Manga</h4>
+                        <h4 id="edit-title">Editar Manga</h4>
                     </div>
                 </div>
             </div>
-            <div class="manga-form">
-                <!-- Step 1: Manga info -->
+            <div class="manga-form" id="edit-content" style="display:none;">
+                <!-- Edit Manga Info -->
                 <div class="form-group">
                     <label>Título</label>
-                    <input type="text" id="m-title" placeholder="Ej: One Piece, Naruto...">
+                    <input type="text" id="m-title" placeholder="Título del manga">
                 </div>
                 <div class="form-group">
                     <label>Género</label>
-                    <input type="text" id="m-genre" placeholder="Ej: Acción, Aventura, Romance...">
+                    <input type="text" id="m-genre" placeholder="Género">
                 </div>
                 <div class="form-group">
                     <label>Descripción</label>
-                    <textarea id="m-desc" rows="3" placeholder="Breve descripción del manga..."></textarea>
+                    <textarea id="m-desc" rows="3" placeholder="Descripción"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Portada</label>
                     <input type="file" id="m-cover" accept="image/*" style="display:none;">
-                    <div class="cover-preview" id="cover-preview">Click para elegir portada</div>
+                    <div class="cover-preview" id="cover-preview">Click para cambiar portada</div>
                 </div>
+
+                <button class="site-btn" id="update-info-btn" style="margin-bottom:30px;">Guardar Cambios</button>
 
                 <hr style="border-color:#1e1f40; margin:30px 0;">
 
-                <!-- Step 2: Chapter pages -->
+                <!-- Existing Chapters -->
+                <h5 style="color:#fff;font-family:'Oswald',sans-serif;text-transform:uppercase;margin-bottom:16px;">Capítulos Existentes</h5>
+                <div id="chapter-list" style="margin-bottom:30px;"></div>
+
+                <hr style="border-color:#1e1f40; margin:30px 0;">
+
+                <!-- Add New Chapter -->
+                <h5 style="color:#fff;font-family:'Oswald',sans-serif;text-transform:uppercase;margin-bottom:16px;">Agregar Nuevo Capítulo</h5>
                 <div class="form-group">
                     <label>Número de Capítulo</label>
-                    <input type="text" id="ch-num" placeholder="Ej: 1" value="1">
+                    <input type="text" id="ch-num" placeholder="Ej: 2">
                 </div>
                 <div class="form-group">
                     <label>Páginas del Capítulo</label>
                     <div class="upload-zone" id="upload-zone">
                         <i class="fa fa-cloud-upload"></i>
                         <p>Arrastra las imágenes aquí o click para seleccionar</p>
-                        <p style="font-size:12px;margin-top:8px;">Se guardan en orden. Sube todas las páginas del capítulo.</p>
                     </div>
                     <input type="file" id="page-files" accept="image/*" multiple style="display:none;">
                     <div class="page-thumbs" id="page-thumbs"></div>
                 </div>
 
-                <div style="margin-top:30px;">
-                    <button class="site-btn" id="save-btn">Guardar Manga</button>
-                    <a href="./manga.html" class="primary-btn" style="margin-left:16px;">Cancelar</a>
+                <div style="margin-top:20px;">
+                    <button class="site-btn" id="add-chapter-btn">Agregar Capítulo</button>
+                    <a href="./manga-reader.html" class="primary-btn" id="reader-link" style="margin-left:16px;">Ver en Lector</a>
                 </div>
             </div>
         </div>
     </section>
-    <!-- Upload Form End -->
 
-    <!-- Footer Section Begin -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="page-up">
             <a href="#" id="scrollToTopButton"><span class="arrow_carrot-up"></span></a>
@@ -149,9 +153,7 @@
             </div>
         </div>
     </footer>
-    <!-- Footer Section End -->
 
-    <!-- Js Plugins -->
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery.slicknav.js"></script>
@@ -160,13 +162,32 @@
     <script src="js/manga-auth.js"></script>
     <script>
     'use strict';
-    MangaAuth.requireAuth(function () {
-        let coverBlob = null;
+    MangaAuth.requireAuth(async function () {
+        const params = new URLSearchParams(location.search);
+        const mangaId = params.get('id');
+        if (!mangaId) { window.location.href = './manga.html'; return; }
+
+        const manga = await MangaDB.getManga(mangaId);
+        if (!manga) { window.location.href = './manga.html'; return; }
+
+        document.getElementById('edit-content').style.display = 'block';
+        document.getElementById('reader-link').href = './manga-reader.html?id=' + mangaId;
+
+        let coverBlob = manga.coverBlob || null;
         let pageFiles = [];
 
-        // Cover selection
-        const coverInput = document.getElementById('m-cover');
+        // Load existing info
+        document.getElementById('m-title').value = manga.title || '';
+        document.getElementById('m-genre').value = manga.genre || '';
+        document.getElementById('m-desc').value = manga.description || '';
         const coverPreview = document.getElementById('cover-preview');
+        if (manga.coverUrl) {
+            coverPreview.style.backgroundImage = 'url(' + manga.coverUrl + ')';
+            coverPreview.textContent = '';
+        }
+
+        // Cover change
+        const coverInput = document.getElementById('m-cover');
         coverPreview.addEventListener('click', () => coverInput.click());
         coverInput.addEventListener('change', function () {
             const file = this.files[0];
@@ -177,7 +198,66 @@
             coverPreview.textContent = '';
         });
 
-        // Page upload zone
+        // Update info
+        document.getElementById('update-info-btn').addEventListener('click', async function () {
+            manga.title = document.getElementById('m-title').value.trim() || manga.title;
+            manga.genre = document.getElementById('m-genre').value.trim();
+            manga.description = document.getElementById('m-desc').value.trim();
+            if (coverBlob && coverBlob !== manga.coverBlob) {
+                manga.coverBlob = coverBlob;
+                manga.coverUrl = URL.createObjectURL(coverBlob);
+            }
+            await MangaDB.updateManga(manga);
+            this.textContent = '¡Guardado!';
+            setTimeout(() => this.textContent = 'Guardar Cambios', 1500);
+        });
+
+        // Render existing chapters
+        async function renderChapters() {
+            const list = document.getElementById('chapter-list');
+            list.innerHTML = '';
+            const chapters = await MangaDB.getChaptersByManga(mangaId);
+            if (!chapters.length) {
+                list.innerHTML = '<p style="color:#8a8aa0;">Sin capítulos aún.</p>';
+                return;
+            }
+            const nextChNum = chapters.length + 1;
+            document.getElementById('ch-num').value = nextChNum;
+
+            for (const ch of chapters) {
+                const pages = await MangaDB.getPagesByChapter(ch.id);
+                const item = document.createElement('div');
+                item.className = 'reader-chapter-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="ch-num">${ch.title}</div>
+                        <div class="ch-info">${pages.length} páginas</div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <button class="mode-btn view-ch" data-id="${ch.id}">Ver</button>
+                        <button class="mode-btn del-ch" data-id="${ch.id}" style="background:#e53637;border:none;color:#fff;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:13px;">Eliminar</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            }
+
+            list.querySelectorAll('.view-ch').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    window.location.href = './manga-reader.html?id=' + mangaId + '&ch=' + btn.dataset.id;
+                });
+            });
+            list.querySelectorAll('.del-ch').forEach(btn => {
+                btn.addEventListener('click', async function () {
+                    if (!confirm('¿Eliminar este capítulo y todas sus páginas?')) return;
+                    await MangaDB.deleteChapter(btn.dataset.id);
+                    renderChapters();
+                });
+            });
+        }
+
+        renderChapters();
+
+        // Upload zone for new chapter
         const zone = document.getElementById('upload-zone');
         const fileInput = document.getElementById('page-files');
         const thumbs = document.getElementById('page-thumbs');
@@ -215,42 +295,26 @@
         thumbs.addEventListener('click', function (e) {
             const btn = e.target.closest('.rm');
             if (!btn) return;
-            const idx = parseInt(btn.dataset.idx);
-            pageFiles.splice(idx, 1);
+            pageFiles.splice(parseInt(btn.dataset.idx), 1);
             renderThumbs();
         });
 
-        // Save
-        document.getElementById('save-btn').addEventListener('click', async function () {
-            const title = document.getElementById('m-title').value.trim();
-            const genre = document.getElementById('m-genre').value.trim();
-            const desc = document.getElementById('m-desc').value.trim();
+        // Add chapter
+        document.getElementById('add-chapter-btn').addEventListener('click', async function () {
             const chNum = document.getElementById('ch-num').value.trim() || '1';
-
-            if (!title) { alert('Ingresa un título'); return; }
             if (!pageFiles.length) { alert('Sube al menos una página'); return; }
 
             this.textContent = 'Guardando...';
             this.disabled = true;
 
-            const mangaId = MangaDB.genId();
-            const coverUrl = coverBlob ? URL.createObjectURL(coverBlob) : '';
-
-            await MangaDB.addManga({
-                id: mangaId,
-                title, genre, description: desc,
-                coverUrl,
-                coverBlob: coverBlob || null,
-                createdAt: Date.now()
-            });
-
+            const chapters = await MangaDB.getChaptersByManga(mangaId);
             const chapterId = MangaDB.genId();
             await MangaDB.addChapter({
                 id: chapterId,
                 mangaId,
                 number: chNum,
                 title: 'Capítulo ' + chNum,
-                order: 1,
+                order: chapters.length + 1,
                 createdAt: Date.now()
             });
 
@@ -263,7 +327,11 @@
                 });
             }
 
-            window.location.href = './manga-reader.html?id=' + mangaId;
+            pageFiles = [];
+            renderThumbs();
+            renderChapters();
+            this.textContent = 'Agregar Capítulo';
+            this.disabled = false;
         });
     });
     </script>

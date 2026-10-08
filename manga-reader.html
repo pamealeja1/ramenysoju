@@ -26,6 +26,7 @@
         <div class="controls">
             <select id="chapter-select"></select>
             <button class="mode-btn" id="mode-btn">Scroll</button>
+            <a href="./manga-edit.html" id="edit-link" class="mode-btn" style="display:none;text-decoration:none;">Editar</a>
         </div>
     </div>
 
@@ -40,6 +41,7 @@
     <!-- Js Plugins -->
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/manga-db.js"></script>
+    <script src="js/manga-auth.js"></script>
     <script>
     'use strict';
     (async function () {
@@ -60,6 +62,13 @@
 
         const chapters = await MangaDB.getChaptersByManga(mangaId);
         titleEl.textContent = manga.title;
+
+        // Show edit link if logged in
+        if (MangaAuth.isLoggedIn()) {
+            const editLink = document.getElementById('edit-link');
+            editLink.href = './manga-edit.html?id=' + mangaId;
+            editLink.style.display = 'inline-block';
+        }
 
         // Populate chapter select
         chapters.forEach(ch => {
