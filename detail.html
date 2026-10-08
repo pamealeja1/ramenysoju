@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles</title>
+    <style>
+        body { margin: 0; background: #0f172a; color: #e2e8f0; font-family: Arial; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        img { max-width: 100%; border-radius: 8px; }
+        h1 { font-size: 2rem; }
+        a { color: #f59e0b; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/ramenysoju/">← Volver</a>
+        <div id="detail"></div>
+    </div>
+    <script>
+        const slug = new URLSearchParams(location.search).get('manga');
+        fetch('../data/mangas.json').then(r=>r.json()).then(d=>{
+            const m = d.mangas.find(x=>x.slug===slug);
+            if(m) {
+                document.title = m.title;
+                let html = `<img src="${m.cover}" style="max-width:300px"><h1>${m.title}</h1><p><strong>${m.author}</strong> - ${m.genre}</p><p>${m.summary}</p>`;
+                m.chapters.forEach(c => {
+                    html += `<h3>Cap ${c.number}: ${c.title}</h3>`;
+                    c.pages.forEach(p => html += `<img src="${p}" style="margin:10px 0">`);
+                });
+                document.getElementById('detail').innerHTML = html;
+            }
+        });
+    </script>
+</body>
+</html>
